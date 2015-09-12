@@ -15,6 +15,25 @@ namespace ezEvade
 
         static EvadeSpellDatabase()
         {
+            #region Ahri
+
+            Spells.Add(
+            new EvadeSpellData
+            {
+                charName = "Ahri",
+                dangerlevel = 4,
+                name = "AhriTumble",
+                spellName = "AhriTumble",
+                range = 500,
+                spellDelay = 50,
+                speed = 1575,
+                spellKey = SpellSlot.R,
+                evadeType = EvadeType.Dash,
+                castType = CastType.Position,
+            });
+
+            #endregion
+
             #region Caitlyn
 
             Spells.Add(
@@ -25,7 +44,7 @@ namespace ezEvade
                 name = "CaitlynEntrapment",
                 spellName = "CaitlynEntrapment",
                 range = 490,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1000,
                 isReversed = true,
                 fixedRange = true,
@@ -46,7 +65,7 @@ namespace ezEvade
                 name = "CarpetBomb",
                 spellName = "CarpetBomb",
                 range = 790,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 975,
                 spellKey = SpellSlot.W,
                 evadeType = EvadeType.Dash,
@@ -66,7 +85,7 @@ namespace ezEvade
                 spellName = "EkkoE",
                 range = 350,
                 fixedRange = true,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1150,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
@@ -98,7 +117,7 @@ namespace ezEvade
                 name = "Chronobreak",
                 spellName = "EkkoR",
                 range = 20000,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.R,
                 evadeType = EvadeType.Blink,
                 castType = CastType.Self,
@@ -117,7 +136,7 @@ namespace ezEvade
                 name = "ArcaneShift",
                 spellName = "EzrealArcaneShift",
                 range = 450,
-                spellDelay = 150,
+                spellDelay = 250,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Blink,
                 castType = CastType.Position,
@@ -135,7 +154,7 @@ namespace ezEvade
                 name = "BodySlam",
                 spellName = "GragasBodySlam",
                 range = 600,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 900,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
@@ -154,7 +173,7 @@ namespace ezEvade
                 name = "GnarE",
                 spellName = "GnarE",
                 range = 475,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 900,
                 checkSpellName = true,
                 spellKey = SpellSlot.E,
@@ -170,7 +189,7 @@ namespace ezEvade
                 name = "GnarE",
                 spellName = "gnarbige",
                 range = 475,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 800,
                 checkSpellName = true,
                 spellKey = SpellSlot.E,
@@ -190,7 +209,7 @@ namespace ezEvade
                 name = "QuickDraw",
                 spellName = "GravesMove",
                 range = 425,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1250,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
@@ -208,7 +227,7 @@ namespace ezEvade
                 dangerlevel = 1,
                 name = "RiftWalk",
                 range = 450,
-                spellDelay = 150,
+                spellDelay = 250,
                 spellKey = SpellSlot.R,
                 evadeType = EvadeType.Blink,
                 castType = CastType.Position,
@@ -225,7 +244,7 @@ namespace ezEvade
                 dangerlevel = 4,
                 name = "Intervention",
                 spellName = "JudicatorIntervention",
-                spellDelay = 50,
+                spellDelay = 250,
                 spellKey = SpellSlot.R,
                 evadeType = EvadeType.SpellShield, //Invulnerability
                 castType = CastType.Target,
@@ -244,7 +263,7 @@ namespace ezEvade
                 name = "Distortion",
                 spellName = "LeblancSlide",
                 range = 600,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1600,
                 spellKey = SpellSlot.W,
                 evadeType = EvadeType.Dash,
@@ -260,7 +279,7 @@ namespace ezEvade
                 spellName = "LeblancSlideM",
                 checkSpellName = true,
                 range = 600,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1600,
                 spellKey = SpellSlot.R,
                 evadeType = EvadeType.Dash,
@@ -276,12 +295,12 @@ namespace ezEvade
             {
                 charName = "LeeSin",
                 dangerlevel = 3,
-                name = "LeeSinE",
-                spellName = "BlindMonkEOne",
+                name = "LeeSinW",
+                spellName = "BlindMonkWOne",
                 range = 700,
                 speed = 1400,
-                spellDelay = 0,
-                spellKey = SpellSlot.E,
+                spellDelay = 50,
+                spellKey = SpellSlot.W,
                 evadeType = EvadeType.Dash,
                 castType = CastType.Target,
                 spellTargets = new[] { SpellTargets.AllyChampions, SpellTargets.AllyMinions },
@@ -299,7 +318,7 @@ namespace ezEvade
                 name = "RelentlessPursuit",
                 spellName = "LucianE",
                 range = 425,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1350,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
@@ -343,6 +362,24 @@ namespace ezEvade
 
             #endregion
 
+            #region Fiora
+
+            Spells.Add(
+            new EvadeSpellData
+            {
+                charName = "Fiora",
+                dangerlevel = 3,
+                name = "FioraW",
+                spellName = "FioraW",
+                range = 750,
+                spellDelay = 100,
+                spellKey = SpellSlot.W,
+                evadeType = EvadeType.WindWall,
+                castType = CastType.Position,
+            });
+
+            #endregion
+
             #region Fizz
 
             Spells.Add(
@@ -355,7 +392,7 @@ namespace ezEvade
                 range = 550,
                 speed = 1400,
                 fixedRange = true,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.Q,
                 evadeType = EvadeType.Dash,
                 castType = CastType.Target,
@@ -372,7 +409,7 @@ namespace ezEvade
                 range = 400,
                 speed = 1400,
                 fixedRange = true,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
                 castType = CastType.Position,
@@ -391,7 +428,7 @@ namespace ezEvade
                 spellName = "RivenTriCleave",
                 range = 260,
                 fixedRange = true,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 560,
                 spellKey = SpellSlot.Q,
                 evadeType = EvadeType.Dash,
@@ -407,7 +444,7 @@ namespace ezEvade
                 spellName = "RivenFeint",
                 range = 325,
                 fixedRange = true,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 1200,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
@@ -443,7 +480,7 @@ namespace ezEvade
                 name = "Deceive",
                 spellName = "Deceive",
                 range = 400,
-                spellDelay = 150,
+                spellDelay = 250,
                 spellKey = SpellSlot.Q,
                 evadeType = EvadeType.Blink,
                 castType = CastType.Position,
@@ -494,7 +531,7 @@ namespace ezEvade
                 name = "SpinningSlash",
                 spellName = "Slash",
                 range = 660,
-                spellDelay = 0,
+                spellDelay = 50,
                 speed = 900,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
@@ -515,7 +552,7 @@ namespace ezEvade
                 range = 300,
                 fixedRange = true,
                 speed = 900,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.Q,
                 evadeType = EvadeType.Dash,
                 castType = CastType.Position,
@@ -535,7 +572,7 @@ namespace ezEvade
                 range = 475,
                 fixedRange = true,
                 speed = 1000,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Dash,
                 castType = CastType.Target,
@@ -569,7 +606,7 @@ namespace ezEvade
                 spellName = "AlphaStrike",
                 range = 600,
                 speed = float.MaxValue,
-                spellDelay = 0,
+                spellDelay = 100,
                 spellKey = SpellSlot.Q,
                 evadeType = EvadeType.Blink,
                 castType = CastType.Target,
@@ -589,7 +626,7 @@ namespace ezEvade
                 spellName = "KatarinaE",
                 range = 700,
                 speed = float.MaxValue,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Blink, //behind target
                 castType = CastType.Target,
@@ -609,7 +646,7 @@ namespace ezEvade
                 spellName = "TalonCutthroat",
                 range = 700,
                 speed = float.MaxValue,
-                spellDelay = 0,
+                spellDelay = 50,
                 spellKey = SpellSlot.E,
                 evadeType = EvadeType.Blink, //behind target
                 castType = CastType.Target,
@@ -628,6 +665,7 @@ namespace ezEvade
                 name = "Flash",
                 spellName = "summonerflash",
                 range = 400,
+                fixedRange = true, //test
                 spellDelay = 50,
                 isSummonerSpell = true,
                 spellKey = SpellSlot.R,

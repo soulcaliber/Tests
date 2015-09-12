@@ -21,9 +21,9 @@ namespace ezEvade
             {
                 Spell spell = entry.Value;
 
-                if (pos.InSkillShot(spell, myHero.BoundingRadius + extraBuffer))
+                if (pos.InSkillShot(spell, ObjectCache.myHeroCache.boundingRadius + extraBuffer))
                 {
-                    dangerlevel += spell.GetSpellDangerLevel();
+                    dangerlevel += spell.dangerlevel;
                 }
             }
             return dangerlevel;
@@ -31,10 +31,13 @@ namespace ezEvade
 
         public static bool InSkillShot(this Vector2 position, Spell spell, float radius, bool predictCollision = true)
         {
-            if (spell.info.spellType == SpellType.Line)
+            if (spell.spellType == SpellType.Line)
             {
-                Vector2 spellPos = spell.GetCurrentSpellPosition(); //leave little space at back of skillshot
+                Vector2 spellPos = spell.currentSpellPosition;
                 Vector2 spellEndPos = predictCollision ? spell.GetSpellEndPosition() : spell.endPos;
+
+                //spellPos = spellPos - spell.direction * radius; //leave some space at back of spell
+                //spellEndPos = spellEndPos + spell.direction * radius; //leave some space at the front of spell
 
                 /*if (spell.info.projectileSpeed == float.MaxValue
                     && Evade.GetTickCount - spell.startTime > spell.info.spellDelay)
@@ -49,17 +52,66 @@ namespace ezEvade
                     //unfinished
                 }*/
 
-                return projection.SegmentPoint.Distance(position) <= spell.GetSpellRadius() + radius;
+                return projection.IsOnSegment && projection.SegmentPoint.Distance(position) <= spell.radius + radius;
             }
-            else if (spell.info.spellType == SpellType.Circular)
+            else if (spell.spellType == SpellType.Circular)
             {
-                return position.Distance(spell.endPos) <= spell.GetSpellRadius() + radius;
+                if (spell.info.spellName == "VeigarEventHorizon")
+                {
+                    return position.Distance(spell.endPos) <= spell.radius + radius - ObjectCache.myHeroCache.boundingRadius
+                        && position.Distance(spell.endPos) >= spell.radius + radius - ObjectCache.myHeroCache.boundingRadius - 125;
+                }
+
+                return position.Distance(spell.endPos) <= spell.radius + radius - ObjectCache.myHeroCache.boundingRadius;
             }
-            else if (spell.info.spellType == SpellType.Cone)
+            else if (spell.spellType == SpellType.Arc)
+            {
+                if (position.isLeftOfLineSegment(spell.startPos, spell.endPos))
+                {
+                    return false;
+                }
+
+                var spellRange = spell.startPos.Distance(spell.endPos);
+                var midPoint = spell.startPos + spell.direction * (spellRange/2);
+
+                return position.Distance(midPoint) <= spell.radius + radius - ObjectCache.myHeroCache.boundingRadius;
+            }
+            else if (spell.spellType == SpellType.Cone)
             {
 
             }
             return false;
+        }
+
+        public static bool isLeftOfLineSegment(this Vector2 pos, Vector2 start, Vector2 end)
+        {
+            return ((end.X - start.X) * (pos.Y - start.Y) - (end.Y - start.Y) * (pos.X - start.X)) > 0;
+        }
+
+        public static float GetDistanceToTurrets(this Vector2 pos)
+        {
+            float minDist = float.MaxValue;
+
+            foreach (var entry in ObjectCache.turrets)
+            {
+                var turret = entry.Value;
+                if (turret == null || !turret.IsValid || turret.IsDead)
+                {
+                    Utility.DelayAction.Add(1, () => ObjectCache.turrets.Remove(entry.Key));
+                    continue;
+                }
+
+                if (turret.IsAlly)
+                {
+                    continue;
+                }
+
+                var distToTurret = pos.Distance(turret.Position.To2D());
+
+                minDist = Math.Min(minDist, distToTurret);
+            }
+
+            return minDist;
         }
 
         public static float GetDistanceToChampions(this Vector2 pos)
@@ -86,29 +138,58 @@ namespace ezEvade
             {
                 Spell spell = entry.Value;
 
-                if (spell.info.spellType == SpellType.Line)
+                if (spell.spellType == SpellType.Line)
                 {
-                    if (pos.InSkillShot(spell, myHero.BoundingRadius + extraBuffer))
+                    if (pos.InSkillShot(spell, ObjectCache.myHeroCache.boundingRadius + extraBuffer))
                     {
                         return true;
                     }
                 }
             }
             return false;
-        }  
+        }
 
-        public static bool CheckDangerousPos(this Vector2 pos, float extraBuffer)
+        public static float GetPositionValue(this Vector2 pos)
+        {
+            float posValue = pos.Distance(Game.CursorPos.To2D());
+
+            if (ObjectCache.menuCache.cache["PreventDodgingNearEnemy"].GetValue<bool>())
+            {
+                var minComfortDistance = ObjectCache.menuCache.cache["MinComfortZone"].GetValue<Slider>().Value;
+                var distanceToChampions = pos.GetDistanceToChampions();
+
+                if (minComfortDistance > distanceToChampions)
+                {
+                    posValue += 2 * (minComfortDistance - distanceToChampions);
+                }
+            }
+
+            if (ObjectCache.menuCache.cache["PreventDodgingUnderTower"].GetValue<bool>())
+            {
+                var turretRange = 875 + ObjectCache.myHeroCache.boundingRadius;
+                var distanceToTurrets = pos.GetDistanceToTurrets();
+
+                if (turretRange > distanceToTurrets)
+                {
+                    posValue += 5 * (turretRange - distanceToTurrets);
+                }
+            }
+
+            return posValue;
+        }
+
+        public static bool CheckDangerousPos(this Vector2 pos, float extraBuffer, bool checkOnlyDangerous = false)
         {
             foreach (KeyValuePair<int, Spell> entry in SpellDetector.spells)
             {
                 Spell spell = entry.Value;
 
-                if (pos.IsUnderTurret())
+                if (checkOnlyDangerous && spell.dangerlevel < 3)
                 {
-                    return true;
+                    continue;
                 }
 
-                if (pos.InSkillShot(spell, myHero.BoundingRadius + extraBuffer))
+                if (pos.InSkillShot(spell, ObjectCache.myHeroCache.boundingRadius + extraBuffer))
                 {
                     return true;
                 }
@@ -123,7 +204,7 @@ namespace ezEvade
             int posChecked = 0;
             int radiusIndex = 0;
 
-            Vector2 heroPoint = myHero.ServerPosition.To2D();
+            Vector2 heroPoint = ObjectCache.myHeroCache.serverPos2D;
             Vector2 lastMovePos = Game.CursorPos.To2D();
 
             List<PositionInfo> posTable = new List<PositionInfo>();

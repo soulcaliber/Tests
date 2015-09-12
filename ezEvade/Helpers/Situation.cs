@@ -21,9 +21,9 @@ namespace ezEvade
 
         public static bool isNearEnemy(this Vector2 pos, float distance, bool alreadyNear = true)
         {
-            if (Evade.menu.Item("PreventDodgingNearEnemy").GetValue<bool>())
+            if (ObjectCache.menuCache.cache["PreventDodgingNearEnemy"].GetValue<bool>())
             {
-                var curDistToEnemies = myHero.ServerPosition.To2D().GetDistanceToChampions();
+                var curDistToEnemies = ObjectCache.myHeroCache.serverPos2D.GetDistanceToChampions();
                 var posDistToEnemies = pos.GetDistanceToChampions();
                 
                 if (curDistToEnemies < distance)
@@ -44,15 +44,15 @@ namespace ezEvade
 
             return false;
         }
-
+                
         public static bool IsUnderTurret(this Vector2 pos, bool checkEnemy = true)
         {
-            if (!Evade.menu.Item("PreventDodgingUnderTower").GetValue<bool>())
+            if (!ObjectCache.menuCache.cache["PreventDodgingUnderTower"].GetValue<bool>())
             {
                 return false;
             }
 
-            var turretRange = 800 + myHero.BoundingRadius;
+            var turretRange = 875 + ObjectCache.myHeroCache.boundingRadius;
 
             foreach (var entry in ObjectCache.turrets)
             {
@@ -80,9 +80,8 @@ namespace ezEvade
 
         public static bool ShouldDodge()
         {
-            if (Evade.menu.SubMenu("Main").Item("DodgeSkillShots").GetValue<KeyBind>().Active == false
+            if (ObjectCache.menuCache.cache["DodgeSkillShots"].GetValue<KeyBind>().Active == false
                 || CommonChecks()
-                || myHero.IsImmovable
                 )
             {
                 //has spellshield - sivir, noc, morgana
@@ -108,9 +107,9 @@ namespace ezEvade
 
         public static bool ShouldUseEvadeSpell()
         {
-            if (Evade.menu.Item("ActivateEvadeSpells").GetValue<KeyBind>().Active == false
+            if (ObjectCache.menuCache.cache["ActivateEvadeSpells"].GetValue<KeyBind>().Active == false
                 || CommonChecks()
-                || Evade.lastWindupTime - Evade.TickCount > 0
+                || Evade.lastWindupTime - EvadeUtils.TickCount > 0
                 )
             {
                 return false;
@@ -160,19 +159,19 @@ namespace ezEvade
             }
 
             //Sivir E
-            if (unit.LastCastedSpellName() == "SivirE" && (Evade.TickCount - Evade.lastSpellCastTime) < 300)
+            if (unit.LastCastedSpellName() == "SivirE" && (EvadeUtils.TickCount - Evade.lastSpellCastTime) < 300)
             {
                 return true;
             }
 
             //Morganas E
-            if (unit.LastCastedSpellName() == "BlackShield" && (Evade.TickCount - Evade.lastSpellCastTime) < 300)
+            if (unit.LastCastedSpellName() == "BlackShield" && (EvadeUtils.TickCount - Evade.lastSpellCastTime) < 300)
             {
                 return true;
             }
 
             //Nocturnes E
-            if (unit.LastCastedSpellName() == "NocturneShit" && (Evade.TickCount - Evade.lastSpellCastTime) < 300)
+            if (unit.LastCastedSpellName() == "NocturneShit" && (EvadeUtils.TickCount - Evade.lastSpellCastTime) < 300)
             {
                 return true;
             }

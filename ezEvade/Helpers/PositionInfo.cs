@@ -31,6 +31,7 @@ namespace ezEvade
         public bool hasComfortZone = true;
         public Obj_AI_Base target = null;
         public bool recalculatedPath = false;
+        public float speed = 0;
 
         public PositionInfo(
             Vector2 position,
@@ -48,7 +49,7 @@ namespace ezEvade
             this.distanceToMouse = distanceToMouse;
             this.dodgeableSpells = dodgeableSpells;
             this.undodgeableSpells = undodgeableSpells;
-            this.timestamp = Evade.TickCount;
+            this.timestamp = EvadeUtils.TickCount;
         }
 
         public PositionInfo(
@@ -59,10 +60,15 @@ namespace ezEvade
             this.position = position;
             this.isDangerousPos = isDangerousPos;
             this.distanceToMouse = distanceToMouse;
-            this.timestamp = Evade.TickCount;
+            this.timestamp = EvadeUtils.TickCount;
         }
 
         public static PositionInfo SetAllDodgeable()
+        {
+            return SetAllDodgeable(myHero.Position.To2D());
+        }
+
+        public static PositionInfo SetAllDodgeable(Vector2 position)
         {
             List<int> dodgeableSpells = new List<int>();
             List<int> undodgeableSpells = new List<int>();
@@ -74,7 +80,7 @@ namespace ezEvade
             }
 
             return new PositionInfo(
-                myHero.Position.To2D(),
+                position,
                 0,
                 0,
                 true,
@@ -96,7 +102,7 @@ namespace ezEvade
                 Spell spell = entry.Value;
                 undodgeableSpells.Add(entry.Key);
 
-                var spellDangerLevel = spell.GetSpellDangerLevel();
+                var spellDangerLevel = spell.dangerlevel;
 
                 posDangerLevel = Math.Max(posDangerLevel, spellDangerLevel);
                 posDangerCount += spellDangerLevel;
@@ -142,6 +148,28 @@ namespace ezEvade
             return new HashSet<int>(posInfo1.spellList).SetEquals(posInfo2.spellList);
         }
 
+        public static bool isBetterMovePos(this PositionInfo newPosInfo)
+        {
+            PositionInfo posInfo = null;
+            var path = myHero.Path;
+            if (path.Length > 0)
+            {
+                var movePos = path[path.Length - 1].To2D();
+                posInfo = EvadeHelper.CanHeroWalkToPos(movePos, ObjectCache.myHeroCache.moveSpeed, 0, 0, false);
+            }
+            else
+            {
+                posInfo = EvadeHelper.CanHeroWalkToPos(ObjectCache.myHeroCache.serverPos2D, ObjectCache.myHeroCache.moveSpeed, 0, 0, false);
+            }
+
+            if (posInfo.posDangerCount < newPosInfo.posDangerCount)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
         public static PositionInfo CompareLastMovePos(this PositionInfo newPosInfo)
         {
             PositionInfo posInfo = null;
@@ -149,11 +177,11 @@ namespace ezEvade
             if (path.Length > 0)
             {
                 var movePos = path[path.Length - 1].To2D();
-                posInfo = EvadeHelper.CanHeroWalkToPos(movePos, myHero.MoveSpeed, 0, 0, false);
+                posInfo = EvadeHelper.CanHeroWalkToPos(movePos, ObjectCache.myHeroCache.moveSpeed, 0, 0, false);
             }
             else
             {
-                posInfo = EvadeHelper.CanHeroWalkToPos(myHero.ServerPosition.To2D(), myHero.MoveSpeed, 0, 0, false);
+                posInfo = EvadeHelper.CanHeroWalkToPos(ObjectCache.myHeroCache.serverPos2D, ObjectCache.myHeroCache.moveSpeed, 0, 0, false);
             }
 
             if (posInfo.posDangerCount < newPosInfo.posDangerCount)

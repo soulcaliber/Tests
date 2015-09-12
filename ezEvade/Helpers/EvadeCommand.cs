@@ -30,20 +30,29 @@ namespace ezEvade
 
         public EvadeCommand()
         {
-            this.timestamp = Evade.TickCount;
+            this.timestamp = EvadeUtils.TickCount;
             this.isProcessed = false;
         }
 
         public static void MoveTo(Vector2 movePos)
         {
+            if (!Situation.ShouldDodge())
+            {
+                return;
+            }
+
             Evade.lastEvadeCommand = new EvadeCommand
             {
                 order = EvadeOrderCommand.MoveTo,
                 targetPosition = movePos,
-                timestamp = Evade.TickCount,
+                timestamp = EvadeUtils.TickCount,
                 isProcessed = false
-            };            
-            myHero.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D(), false);            
+            };
+
+            Evade.lastMoveToPosition = movePos;
+            Evade.lastMoveToServerPos = myHero.ServerPosition.To2D();
+
+            myHero.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D(), false);
         }
 
         public static void Attack(EvadeSpellData spellData, Obj_AI_Base target)
@@ -53,7 +62,7 @@ namespace ezEvade
                 order = EvadeOrderCommand.Attack,
                 target = target,
                 evadeSpellData = spellData,
-                timestamp = Evade.TickCount,
+                timestamp = EvadeUtils.TickCount,
                 isProcessed = false
             };
 
@@ -67,7 +76,7 @@ namespace ezEvade
                 order = EvadeOrderCommand.CastSpell,
                 target = target,
                 evadeSpellData = spellData,
-                timestamp = Evade.TickCount,
+                timestamp = EvadeUtils.TickCount,
                 isProcessed = false
             };
 
@@ -81,7 +90,7 @@ namespace ezEvade
                 order = EvadeOrderCommand.CastSpell,
                 targetPosition = movePos,
                 evadeSpellData = spellData,
-                timestamp = Evade.TickCount,
+                timestamp = EvadeUtils.TickCount,
                 isProcessed = false
             };
 
@@ -94,7 +103,7 @@ namespace ezEvade
             {
                 order = EvadeOrderCommand.CastSpell,
                 evadeSpellData = spellData,
-                timestamp = Evade.TickCount,
+                timestamp = EvadeUtils.TickCount,
                 isProcessed = false
             };
 

@@ -25,7 +25,7 @@ namespace ezEvade
         {
             for (var i = ActionList.Count - 1; i >= 0; i--)
             {
-                if (ActionList[i].Time <= Evade.TickCount)
+                if (ActionList[i].Time <= EvadeUtils.TickCount)
                 {
                     try
                     {
@@ -35,9 +35,9 @@ namespace ezEvade
                             //Will somehow result in calling ALL non-internal marked classes of the called assembly and causes NullReferenceExceptions.
                         }
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
-                        // ignored
+                        Console.WriteLine(e);
                     }
 
                     ActionList.RemoveAt(i);
@@ -58,7 +58,7 @@ namespace ezEvade
 
             public Action(int time, Callback callback)
             {
-                Time = time + (int)Evade.TickCount;
+                Time = time + (int)EvadeUtils.TickCount;
                 CallbackObject = callback;
             }
         }

@@ -11,7 +11,6 @@ namespace ezEvade
 {
     class PingTester
     {
-        public static Menu menu;
         public static Menu testMenu;
 
         private static Obj_AI_Hero myHero { get { return ObjectManager.Player; } }
@@ -20,35 +19,33 @@ namespace ezEvade
         private static bool lastRandomMoveCoeff = false;
 
         private static float sumPingTime = 0;
-        private static float averagePingTime = Game.Ping;
+        private static float averagePingTime = ObjectCache.gamePing;
         private static int testCount = 0;
         private static int autoTestCount = 0;
-        private static float maxPingTime = Game.Ping;
+        private static float maxPingTime = ObjectCache.gamePing;
 
         private static bool autoTestPing = false;
 
         private static EvadeCommand lastTestMoveToCommand;
 
-        public PingTester(Menu mainMenu)
+        public PingTester()
         {
             Game.OnUpdate += Game_OnGameUpdate;
-
-            menu = mainMenu;
-
-            testMenu = new Menu("Ping Tester", "PingTest");
+            
+            testMenu = new Menu("Ping Tester", "PingTest", true);
             testMenu.AddItem(new MenuItem("AutoSetPing", "Auto Set Ping").SetValue(false));
             testMenu.AddItem(new MenuItem("TestMoveTime", "Test Ping").SetValue(false));
             testMenu.AddItem(new MenuItem("SetMaxPing", "Set Max Ping").SetValue(false));
             testMenu.AddItem(new MenuItem("SetAvgPing", "Set Avg Ping").SetValue(false));
             testMenu.AddItem(new MenuItem("Test20MoveTime", "Test Ping x20").SetValue(false));
             testMenu.AddItem(new MenuItem("PrintResults", "Print Results").SetValue(false));
-            menu.AddSubMenu(testMenu);
+            testMenu.AddToMainMenu();
         }
 
         private void IssueTestMove(int recursionCount)
         {
 
-            var movePos = myHero.ServerPosition.To2D();
+            var movePos = ObjectCache.myHeroCache.serverPos2D;
 
             Random rand = new Random();
 
@@ -66,7 +63,7 @@ namespace ezEvade
             {
                 order = EvadeOrderCommand.MoveTo,
                 targetPosition = movePos,
-                timestamp = Evade.TickCount,
+                timestamp = EvadeUtils.TickCount,
                 isProcessed = false
             };
             myHero.IssueOrder(GameObjectOrder.MoveTo, movePos.To3D(), true);
@@ -80,14 +77,7 @@ namespace ezEvade
 
         private void SetPing(int ping)
         {
-            Evade.menu.Item("FastEvadeActivationTime").SetValue(new Slider(200, 0, 500));
-            Evade.menu.Item("RejectMinDistance").SetValue(new Slider(10, 0, 100));
             Evade.menu.Item("ExtraPingBuffer").SetValue(new Slider(ping, 0, 200));
-            Evade.menu.Item("ExtraCPADistance").SetValue(new Slider(10, 0, 150));
-            Evade.menu.Item("ExtraSpellRadius").SetValue(new Slider(0, 0, 100));
-            Evade.menu.Item("ExtraEvadeDistance").SetValue(new Slider(100, 0, 300));
-            Evade.menu.Item("ExtraAvoidDistance").SetValue(new Slider(100, 0, 300));
-            Evade.menu.Item("MinComfortZone").SetValue(new Slider(400, 0, 1000));
         }
 
         private void Game_OnGameUpdate(EventArgs args)
@@ -181,7 +171,7 @@ namespace ezEvade
 
                         if (movePos.Distance(lastTestMoveToCommand.targetPosition) < 10)
                         {
-                            float moveTime = Evade.TickCount - lastTestMoveToCommand.timestamp - Game.Ping;
+                            float moveTime = EvadeUtils.TickCount - lastTestMoveToCommand.timestamp - ObjectCache.gamePing;
                             Console.WriteLine("Extra Delay: " + moveTime);
                             lastTestMoveToCommand.isProcessed = true;
 
